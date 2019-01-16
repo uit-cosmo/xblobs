@@ -22,6 +22,7 @@ setup(name=name,
                         'matplotlib>=2.2',
                         'scipy>=1.2.0',
                         'animatplot'],
+      tests_require=['pytest'],
       classifiers=[
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
