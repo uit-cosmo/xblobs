@@ -1,3 +1,4 @@
+import numpy
 import scipy.ndimage
 import dask_image.ndmeasure
 
@@ -7,15 +8,43 @@ from xarray import apply_ufunc
 from .blob import Blob
 
 
-DEFAULT_THRESHOLD = 0.2
+DEFAULT_THRESHOLD = 1
+DEFAULT_REGION = 0
 
+def find_blobs(da, threshold=DEFAULT_THRESHOLD, region = DEFAULT_REGION):
+    """
+    Parameters
+    ----------
+    da : xbout Dataset
+    threshold : double, optional
+        threshold value in density fluctitions
+    region: double, optional
+        radial potition from where blobs are detected
 
-def find_blobs(da, threshold=DEFAULT_THRESHOLD):
+    Returns
+    -------
+    labels : xarray.DataArray containing labels of features.
 
-    # Set all values below threshold to zero
+    """
 
-    blob_labels_name = da.name + "_blobs"
-    da[blob_labels_name] = _detect_features(da, parallel=True)
+    # remove core region if wanted
+    mask = da.radial > region*da.radial[-1]
+    n_selected_region  = da['n'].where(mask, 0)
+    da['n_selected_region'] = n_selected_region
+
+    # subtract profile of n
+    da['n_profile'] = da['n_selected_region'].mean(dim=('time', 'binormal'))
+    n_fluc =  da['n_selected_region'] - da['n_profile']
+
+    # apply condition for blobs
+    mask = n_fluc>threshold*n_fluc.std()
+    mask2 = n_fluc<=threshold*n_fluc.std()
+    fluctuations = n_fluc.where(mask, 0)
+    fluctuations  = fluctuations.where(mask2, 1)
+    da['fluctuations'] = fluctuations
+
+    #detect coherent blob structures
+    da['blob_labels'] = _detect_features(da['fluctuations'], parallel=True)
 
     # TODO instead return list of Blob objects?
     return da

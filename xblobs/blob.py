@@ -1,3 +1,4 @@
+import numpy as np
 
 class Blob:
     """
@@ -10,37 +11,96 @@ class Blob:
         self.variable = variable
         self.id = id
 
+        self.label_field = self.variable['blob_labels'].where(self.variable['blob_labels'] == self.id, drop=True)
+        self.n_field = self.variable['n'].where(self.variable['blob_labels'] == self.id, drop=True)
+        #com_radial_field = self.n_field['radial']*self.n_field
+        #com_binormal_field = self.n_field['binormal']*self.n_field
+        #total_mass_unnormalized = self.n_field.sum(dim=('binormal','radial'))
+
+        #self.com_radial = com_radial_field.sum(dim=('binormal','radial')).values/total_mass_unnormalized.values
+        #self.com_binormal = com_binormal_field.sum(dim=('binormal','radial')).values/total_mass_unnormalized.values
+
     def lifetime(self):
         """
-
-
         Returns
         -------
         lifetime : np.scalar
         """
-        raise NotImplementedError
+        lifetime = self.label_field['time'].values[-1] - self.label_field['time'].values[0]
+        return lifetime
 
     def com(self):
-        raise NotImplementedError
-
-    def velocity(self):
-        raise NotImplementedError
-
-    def trajectory(self):
         """
-
         Returns
         -------
-        trajectory : xarray.DataArray
-            DataArray of positions over time?
+        centre of mass for each time step : np.array
+
         """
-        raise NotImplementedError
+        return np.vstack((self.com_radial, self.com_binormal))
+
+    def velocity(self):
+        if(self.com_radial.size == 1):
+            print('blob only detected in one frame')
+        else:
+            return ((np.diff(self.com_radial)/(self.label_field['time'].values[1] - self.label_field['time'].values[0]))**2 + \
+                    (np.diff(self.com_binormal)/(self.label_field['time'].values[1] - self.label_field['time'].values[0]))**2)**0.5
+
+    def velocity_x(self):
+        if(self.com_radial.size == 1):
+            print('blob only detected in one frame')
+        else:
+            return np.diff(self.com_radial)/(self.label_field['time'].values[1] - self.label_field['time'].values[0])
+
+    def velocity_y(self):
+        if(self.com_binormal.size == 1):
+            print('blob only detected in one frame')
+        else:
+            return np.diff(self.com_binormal)/(self.label_field['time'].values[1] - self.label_field['time'].values[0])
+
 
     def amplitude(self):
-        raise NotImplementedError
+        """
+        Returns
+        -------
+        array of amplitudes of blob for each timestep : np.array
+        """
+        return self.n_field.max(dim=('radial','binormal')).values
+
+
+    def max_amplitude(self):
+        """
+        Returns
+        -------
+        maximum amplitude in blob's lifetime : np.scalar
+        """
+        return self.n_field.max(dim=('time','radial','binormal')).values
 
     def mass(self):
-        raise NotImplementedError
+        """
+        Returns
+        -------
+        array of mass of blob for each timestep : np.array
+
+        fix dx and dz dimension !!!!!
+        """
+        return self.n_field.sum(dim=('radial','binormal')).values*self.variable['dx'].values[0]*self.variable.metadata['dz']
+
+    def average_mass(self):
+        """
+        Returns
+        -------
+        time averaged mass of blob  : np.scalar
+
+        fix dx and dz dimension !!!!!
+        """
+        return self.n_field.sum(dim=('time','radial','binormal')).values*self.variable['dx'].values[0]*self.variable.metadata['dz'] / self.n_field.sum(dim=('radial','binormal')).values.size
 
     def size(self):
-        raise NotImplementedError
+        """
+        Returns
+        -------
+        array of size of blob for each timestep : np.array
+
+        fix dx and dz dimension !!!!!
+        """
+        return self.label_field.sum(dim=('radial','binormal')).values*self.variable['dx'].values[0]*self.variable.metadata['dz'] / self.id
