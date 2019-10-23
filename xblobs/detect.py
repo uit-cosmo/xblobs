@@ -37,8 +37,9 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, region = DEFAULT_REGION):
     n_fluc =  da['n_selected_region'] - da['n_profile']
 
     # apply condition for blobs
-    mask = n_fluc>threshold*n_fluc.std()
-    mask2 = n_fluc<=threshold*n_fluc.std()
+    mask = n_fluc>threshold*n_fluc.std(dim='binormal')
+    mask2 = n_fluc<=threshold*n_fluc.std(dim='binormal')
+    #print(n_fluc.std(dim='radial').shape)
     fluctuations = n_fluc.where(mask, 0)
     fluctuations  = fluctuations.where(mask2, 1)
     da['fluctuations'] = fluctuations
@@ -68,7 +69,8 @@ def _detect_features(da, dim=None, parallel=True):
                                   "dimensions")
 
     if parallel:
-        detector_gufunc = _dask_image_detector_gufunc
+        #detector_gufunc = _dask_image_detector_gufunc
+        detector_gufunc = _scipy_detector_gufunc
         dask = 'allowed'
     else:
         detector_gufunc = _scipy_detector_gufunc
