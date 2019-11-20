@@ -11,7 +11,7 @@ from .blob import Blob
 DEFAULT_THRESHOLD = 1
 DEFAULT_REGION = 0
 
-def find_blobs(da, threshold=DEFAULT_THRESHOLD, region = DEFAULT_REGION):
+def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std_binormial', region = DEFAULT_REGION, background = 'profile'):
     """
     Parameters
     ----------
@@ -33,12 +33,24 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, region = DEFAULT_REGION):
     da['n_selected_region'] = n_selected_region
 
     # subtract profile of n
-    da['n_profile'] = da['n_selected_region'].mean(dim=('time', 'binormal'))
-    n_fluc =  da['n_selected_region'] - da['n_profile']
+    if background == 'profile':
+        da['n_profile'] = da['n_selected_region'].mean(dim=('time', 'binormal'))
+        n_fluc =  da['n_selected_region'] - da['n_profile']
+    elif background == 'flat':
+        n_fluc =  da['n_selected_region']
+    else:
+        print('background must be either profile or flat')
 
     # apply condition for blobs
-    mask = n_fluc>threshold*n_fluc.std(dim='binormal')
-    mask2 = n_fluc<=threshold*n_fluc.std(dim='binormal')
+    if scale_treshold == 'std_binormial':
+        scale = n_fluc.std(dim='binormal')
+    elif scale_treshold == 'std':
+        scale = n_fluc.std
+    elif scale_treshold == 'absolute_value':
+        scale = 1
+
+    mask = n_fluc>threshold*scale
+    mask2 = n_fluc<=threshold*scale
     #print(n_fluc.std(dim='radial').shape)
     fluctuations = n_fluc.where(mask, 0)
     fluctuations  = fluctuations.where(mask2, 1)
