@@ -4,14 +4,13 @@ import dask_image.ndmeasure
 
 from xarray import apply_ufunc
 
-
 from .blob import Blob
 
 
 DEFAULT_THRESHOLD = 1
 DEFAULT_REGION = 0
 
-def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std_binormial', region = DEFAULT_REGION, background = 'profile'):
+def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std', region = DEFAULT_REGION, background = 'profile', norm_density = False):
     """
     Parameters
     ----------
@@ -25,11 +24,33 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std_binormial'
     -------
     labels : xarray.DataArray containing labels of features.
 
-    """
-
+    """    
     # remove core region if wanted
+
+        # normalize density
+    if norm_density:
+        da['n2'] = da['n']**2
+        n_mean = da['n'].mean(dim=('time')).values
+        n_mean2 = da['n2'].mean(dim=('time')).values
+        n_rms = numpy.sqrt(n_mean2)
+        da['n_norm'] = (da['n'] - n_mean)/n_rms
+
     mask = da.radial > region*da.radial[-1]
-    n_selected_region  = da['n'].where(mask, 0)
+
+    #remove borders because of periodicity 
+    mask1 = da.binormal > 0.0*da.binormal[-1] 
+    mask2 = da.binormal < 1.0*da.binormal[-1]
+
+    if norm_density:
+        n_selected_region  = da['n_norm'].where(mask, 0)
+        n_selected_region  = n_selected_region.where(mask1, 0)
+        n_selected_region  = n_selected_region.where(mask2, 0)
+    else:
+        n_selected_region  = da['n'].where(mask, 0)
+        n_selected_region  = n_selected_region.where(mask1, 0)
+        n_selected_region  = n_selected_region.where(mask2, 0)
+
+
     da['n_selected_region'] = n_selected_region
 
     # subtract profile of n
@@ -45,7 +66,7 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std_binormial'
     if scale_treshold == 'std_binormial':
         scale = n_fluc.std(dim='binormal')
     elif scale_treshold == 'std':
-        scale = n_fluc.std
+        scale = n_fluc.std()
     elif scale_treshold == 'absolute_value':
         scale = 1
 
@@ -57,11 +78,12 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std_binormial'
     da['fluctuations'] = fluctuations
 
     #detect coherent blob structures
-    da['blob_labels'] = _detect_features(da['fluctuations'], parallel=True)
+    blob_labels = _detect_features(da['fluctuations'], parallel=True)
 
+    da['blob_labels'] = blob_labels
     # TODO instead return list of Blob objects?
     return da
-
+    
 
 def _detect_features(da, dim=None, parallel=True):
     """

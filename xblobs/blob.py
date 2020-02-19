@@ -91,27 +91,23 @@ class Blob:
         Returns
         -------
         array of mass of blob for each timestep : np.array
-
-        fix dx and dz dimension !!!!!
         """
-        return self.n_field.sum(dim=('radial','binormal')).values*self.variable['dx'].values[0]*self.variable['dz'].values[0]
+        return self.n_field.sum(dim=('radial','binormal')).values*self.variable['radial'].values[1]*self.variable['binormal'].values[1]
 
     def average_mass(self):
         """
         Returns
         -------
         time averaged mass of blob  : np.scalar
-
-        fix dx and dz dimension !!!!!
         """
-        return self.n_field.sum(dim=('time','radial','binormal')).values*self.variable['dx'].values[0]*self.variable['dz'].values[0] / self.n_field.sum(dim=('radial','binormal')).values.size
+        return self.n_field.sum(dim=('time','radial','binormal')).values*self.variable['radial'].values[1]*self.variable['binormal'].values[1] / self.n_field.sum(dim=('radial','binormal')).values.size
 
     def size(self):
         """
         Returns
         -------
         array of size of blob for each timestep : np.array
-
-        fix dx and dz dimension !!!!!
         """
-        return self.label_field.sum(dim=('radial','binormal')).values*self.variable['dx'].values[0]*self.variable['dz'].values[0] / self.id
+        #return self.label_field.sum(dim=('radial','binormal')).values*self.variable['radial'].values[1]*self.variable['binormal'].values[1] / self.id
+        return ((self.label_field.sum(dim=('radial','binormal')).values/ self.id)/np.pi)**0.5
+        
