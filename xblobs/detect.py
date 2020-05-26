@@ -69,6 +69,8 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std', region =
         scale = n_fluc.std()
     elif scale_treshold == 'absolute_value':
         scale = 1
+    elif scale_treshold == 'profile':
+        scale = da['n_selected_region'].mean(dim=('time', 'binormal'))
 
     mask = n_fluc>threshold*scale
     mask2 = n_fluc<=threshold*scale
