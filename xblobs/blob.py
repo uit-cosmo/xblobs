@@ -108,6 +108,5 @@ class Blob:
         -------
         array of size of blob for each timestep : np.array
         """
-        #return self.label_field.sum(dim=('radial','binormal')).values*self.variable['radial'].values[1]*self.variable['binormal'].values[1] / self.id
-        return ((self.label_field.sum(dim=('radial','binormal')).values/ self.id)/np.pi)**0.5
+        return self.label_field.sum(dim=('radial','binormal')).values*self.variable['radial'].values[1]*self.variable['binormal'].values[1] / self.id
         
