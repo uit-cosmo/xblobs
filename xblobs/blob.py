@@ -13,6 +13,9 @@ class Blob:
 
         self.label_field = self.variable['blob_labels'].where(self.variable['blob_labels'] == self.id, drop=True)
         self.n_field = self.variable['n'].where(self.variable['blob_labels'] == self.id, drop=True)
+        self.flux_field = self.variable['flux'].where(self.variable['blob_labels'] == self.id, drop=True)
+        self.ExB_field = self.variable['v_x'].where(self.variable['blob_labels'] == self.id, drop=True)
+
         com_radial_field = self.n_field['radial']*self.n_field
         com_binormal_field = self.n_field['binormal']*self.n_field
         total_mass_unnormalized = self.n_field.sum(dim=('binormal','radial'))
@@ -93,6 +96,31 @@ class Blob:
         array of mass of blob for each timestep : np.array
         """
         return self.n_field.sum(dim=('radial','binormal')).values*self.variable['radial'].values[1]*self.variable['binormal'].values[1]
+
+    def flux(self):
+        """
+        Returns
+        -------
+        array of flux of blob for each timestep : np.array
+        """
+        return self.flux_field.sum(dim=('radial','binormal')).values*self.variable['radial'].values[1]*self.variable['binormal'].values[1]
+
+    def ExB_v_x_mean(self):
+        """
+        Returns
+        -------
+        array of average ExB velocity of blob for each timestep : np.array
+        """
+        return self.ExB_field.mean(dim=('radial','binormal')).values
+
+    def ExB_v_x_max(self):
+        """
+        Returns
+        -------
+        array of average ExB velocity of blob for each timestep : np.array
+        """
+        return self.ExB_field.max(dim=('radial','binormal')).values
+
 
     def average_mass(self):
         """

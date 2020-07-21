@@ -74,7 +74,6 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std', region =
 
     mask = n_fluc>threshold*scale
     mask2 = n_fluc<=threshold*scale
-    #print(n_fluc.std(dim='radial').shape)
     fluctuations = n_fluc.where(mask, 0)
     fluctuations  = fluctuations.where(mask2, 1)
     da['fluctuations'] = fluctuations
