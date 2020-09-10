@@ -10,7 +10,7 @@ from .blob import Blob
 DEFAULT_THRESHOLD = 1
 DEFAULT_REGION = 0
 
-def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std', region = DEFAULT_REGION, background = 'profile', norm_density = False):
+def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std', region = DEFAULT_REGION, background = 'profile', n_var = 'n', t_dim = 'time', rad_dim = 'radial',pol_dim = 'binormal'):
     """
     Parameters
     ----------
@@ -26,36 +26,24 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std', region =
 
     """    
     # remove core region if wanted
-
-        # normalize density
-    if norm_density:
-        da['n2'] = da['n']**2
-        n_mean = da['n'].mean(dim=('time')).values
-        n_mean2 = da['n2'].mean(dim=('time')).values
-        n_rms = numpy.sqrt(n_mean2)
-        da['n_norm'] = (da['n'] - n_mean)/n_rms
-
-    mask = da.radial > region*da.radial[-1]
-
+    mask = True
+    exec("mask = da.%s > region*da.%s[-1]" % (rad_dim, rad_dim))
+    
     #remove borders because of periodicity 
-    mask1 = da.binormal > 0.0*da.binormal[-1] 
-    mask2 = da.binormal < 1.0*da.binormal[-1]
+    mask1 = True
+    mask2 = True
+    exec("mask1 = da.%s > 0.0*da.%s[-1]" % (pol_dim, pol_dim))
+    exec("mask1 = da.%s < 1.0*da.%s[-1]" % (pol_dim, pol_dim))
 
-    if norm_density:
-        n_selected_region  = da['n_norm'].where(mask, 0)
-        n_selected_region  = n_selected_region.where(mask1, 0)
-        n_selected_region  = n_selected_region.where(mask2, 0)
-    else:
-        n_selected_region  = da['n'].where(mask, 0)
-        n_selected_region  = n_selected_region.where(mask1, 0)
-        n_selected_region  = n_selected_region.where(mask2, 0)
-
+    n_selected_region  = da[n_var].where(mask, 0)
+    n_selected_region  = n_selected_region.where(mask1, 0)
+    n_selected_region  = n_selected_region.where(mask2, 0)
 
     da['n_selected_region'] = n_selected_region
 
     # subtract profile of n
     if background == 'profile':
-        da['n_profile'] = da['n_selected_region'].mean(dim=('time', 'binormal'))
+        da['n_profile'] = da['n_selected_region'].mean(dim=(t_dim, pol_dim))
         n_fluc =  da['n_selected_region'] - da['n_profile']
     elif background == 'flat':
         n_fluc =  da['n_selected_region']
@@ -64,13 +52,13 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_treshold = 'std', region =
 
     # apply condition for blobs
     if scale_treshold == 'std_binormial':
-        scale = n_fluc.std(dim='binormal')
+        scale = n_fluc.std(dim=pol_dim)
     elif scale_treshold == 'std':
         scale = n_fluc.std()
     elif scale_treshold == 'absolute_value':
         scale = 1
     elif scale_treshold == 'profile':
-        scale = da['n_selected_region'].mean(dim=('time', 'binormal'))
+        scale = da['n_selected_region'].mean(dim=(t_dim, pol_dim))
 
     mask = n_fluc>threshold*scale
     mask2 = n_fluc<=threshold*scale
