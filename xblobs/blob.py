@@ -8,6 +8,11 @@ class Blob():
     """
 
     def __init__(self, variable, id, n_var = 'n', t_dim = 'time', rad_dim = 'radial',pol_dim = 'binormal'):
+        """
+        variable : xbout Dataset containing blob_labels
+
+        Choose other parameters equivalent to find_blobs() function.
+        """
         self.variable = variable
         self.id = id
         self.n_var = n_var
@@ -44,7 +49,7 @@ class Blob():
         """
         Returns
         -------
-        centre of mass for each time step : np.array
+        centre of mass for each time step : 2d np.array
 
         """
         try:
@@ -54,6 +59,12 @@ class Blob():
 
 
     def velocity(self):
+        """
+        Returns
+        -------
+        absolute velocity for each time step : np.array
+
+        """
         if(self.com_radial.size == 1):
             #print('blob only detected in one frame')
             return 0
@@ -66,6 +77,12 @@ class Blob():
                         (np.diff(self.com_binormal)/(self.label_field[self.t_dim].values[1] - self.label_field[self.t_dim].values[0]))**2)**0.5
 
     def velocity_x(self):
+        """
+        Returns
+        -------
+        radial velocity for each time step : np.array
+
+        """
         if(self.com_radial.size == 1):
             #print('blob only detected in one frame')
             return 0
@@ -77,6 +94,12 @@ class Blob():
 
 
     def velocity_y(self):
+        """
+        Returns
+        -------
+        poloidal velocity for each time step : np.array
+
+        """        
         if(self.com_binormal.size == 1):
             #print('blob only detected in one frame')
             return 0
