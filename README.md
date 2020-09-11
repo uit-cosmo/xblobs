@@ -68,7 +68,7 @@ ds = load_your_dataest()
 
 ds = find_blobs(da = ds, scale_threshold = 'absolute_value' ,\
                 threshold = 1.3 ,region = 0.0, background = 'flat', \
-                n_var = 'density'= 'time', rad_dim = 'radial', pol_dim = 'poloidal')
+                n_var = 'density', t_dim = 'time', rad_dim = 'radial', pol_dim = 'poloidal')
                 
 blob1 = Blob(ds,1, n_var = 'density', t_dim = 'time', rad_dim = 'radial', pol_dim = 'poloidal')
 ```
