@@ -120,7 +120,7 @@ the following blob parameters are implemented:
 - `average_mass`: average blob mass
 - `size`: blob size over time
 
-other blob parameters are straight forward to implement
+other blob parameters are straightforward to implement
 
 ## Parallelization 
 Blob detection is parallelised across any number of dimensions by `dask-image`.
