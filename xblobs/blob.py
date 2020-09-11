@@ -11,6 +11,10 @@ class Blob():
         """
         variable : xbout Dataset containing blob_labels
 
+        id : integer between 0 and number of detected blobs 
+            0: refers to the background
+            1-n: detected blobs  
+
         Choose other parameters equivalent to find_blobs() function.
         """
         self.variable = variable

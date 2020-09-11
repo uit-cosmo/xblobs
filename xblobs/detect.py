@@ -1,4 +1,3 @@
-import numpy
 import scipy.ndimage
 import dask_image.ndmeasure
 
@@ -54,14 +53,10 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_threshold = 'std', region 
 
     """    
     # remove core region if wanted
-    mask = True
-    exec("mask = da.%s > region*da.%s[-1]" % (rad_dim, rad_dim))
-    
-    #remove borders because of periodicity 
-    mask1 = True
-    mask2 = True
-    exec("mask1 = da.%s > 0.0*da.%s[-1]" % (pol_dim, pol_dim))
-    exec("mask1 = da.%s < 1.0*da.%s[-1]" % (pol_dim, pol_dim))
+    mask = da[rad_dim] > region*da[rad_dim][-1]
+
+    mask1 = da[pol_dim] > 0.0*da[pol_dim][-1]
+    mask2 = da[pol_dim] < 1.0*da[pol_dim][-1]
 
     n_selected_region  = da[n_var].where(mask, 0)
     n_selected_region  = n_selected_region.where(mask1, 0)
