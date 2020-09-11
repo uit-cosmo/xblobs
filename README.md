@@ -10,4 +10,4 @@ Tools to detect and analyse coherent structures in turbulence (blobs), powered b
 
 Blob detection is parallelised across any number of dimensions by `dask-image`.
 
-![Density evolution](example_gifs/n.gif )  | ![Density evolution](example_gifs/blob_labels.gif) 
+![Density evolution](example_gifs/turbulence_blobs.gif ) 
