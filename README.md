@@ -14,7 +14,7 @@ The algorithm has been developed originally to detect and track coherent structu
 - dask-image >= 0.2.0
 - numpy >= 1.14
 
-## Instalation (pip and conda installation not enabled yet)
+## Installation (pip and conda installation not enabled yet)
 `pip install xblobs`
 or with using conda
 `conda install xblobs -c conda-forge`
@@ -26,7 +26,7 @@ pip install -e .
 ```
 
 ## Usage
-The algorithm is based on the threshold method, i.e. all structures exceeding a defined threshold are labeled as blobs. In order to track blobs over time they have to spatally overlap in two consecutive frames. 
+The algorithm is based on the threshold method, i.e. all structures exceeding a defined threshold are labeled as blobs. In order to track blobs over time they have to spatially overlap in two consecutive frames. 
 
 Applying `find_blobs` function on xarray dataset returns the dataset with a new variable called `blob_lables`. The parameters of single blobs can then be calculated with the `Blob` class. 
 ### xstorm
@@ -82,8 +82,8 @@ blob1 = Blob(ds,1, n_var = 'density', t_dim = 'time', rad_dim = 'radial', pol_di
 
 - `scale_threshold`: following methods implemented
   - `absolute_value`: threshold is scalar value
-  - `profile`: threhsold is time- and poloidal-average profile
-  - `std`: threshold is standard diviation over all three dimensions
+  - `profile`: threshold is time- and poloidal-average profile
+  - `std`: threshold is standard deviation over all three dimensions
   - `std_poloidal`: threshold is standard deviation over time and radial dimension
   
 - `region`: radial potition from where blobs are detected
