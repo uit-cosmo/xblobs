@@ -103,7 +103,7 @@ blob1 = Blob(ds,1, n_var = 'density', t_dim = 'time', rad_dim = 'radial', pol_di
 - `id`: integer between 0 and number of detected blobs 
   - 0: refers to the background
   - 1-n: detected blobs  
-- other parameters equivalent to 'find_blobs'
+- other parameters equivalent to `find_blobs`
 
 
 ## Blob methods
