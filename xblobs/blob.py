@@ -3,8 +3,6 @@ import numpy as np
 class Blob():
     """
     A single blob.
-
-    Accessed by `for blob in BlobArray`
     """
 
     def __init__(self, variable, id, n_var = 'n', t_dim = 'time', rad_dim = 'radial',pol_dim = 'binormal'):
