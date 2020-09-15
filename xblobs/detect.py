@@ -1,6 +1,6 @@
 import scipy.ndimage
 import dask_image.ndmeasure
-
+import numpy as np
 from xarray import apply_ufunc
 
 from .blob import Blob
@@ -95,6 +95,7 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_threshold = 'std', region 
     blob_labels = _detect_features(da['fluctuations'], parallel=False)
 
     da['blob_labels'] = blob_labels
+    da["blob_labels"].attrs["number_of_blobs"] = np.max(da['blob_labels'].values)
     return da
     
 
