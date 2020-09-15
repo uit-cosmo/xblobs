@@ -1,7 +1,7 @@
 # xblobs
 Python tool to detect and analyse coherent structures in turbulence, powered by xarray. 
 
-The algorithm has been developed originally to detect and track coherent structures (blobs) in plasma turbulence simulations but it can be applied on any 2D xarray Dataset. An example is shown below:
+The algorithm has been developed originally to detect and track coherent structures (blobs) in plasma turbulence simulations but it can be applied on any 2D xarray Dataset with a cartesian grid and constant spacing `dx`,`dy` and `dt`. An example is shown below:
 
 
 ![Density evolution](example_gifs/turbulence_blobs.gif ) 
@@ -112,15 +112,15 @@ blob1 = Blob(ds,1, n_var = 'density', t_dim = 'time', rad_dim = 'radial', pol_di
 the following blob parameters are implemented:
 - `t_init`: time when blob is detected 
 - `lifetime`: lifetime of blob
-- `com`: center of mass over time
-- `velocity`: absolute blob velocity over time
-- `velocity_x`: radial blob velocity over time
-- `velocity_y`: poloidal blob velocity over time
-- `amplitude`: blob amplitude over time
-- `max_amplitude`: max amplitude of blob
-- `mass`: blob mass over time
+- `com`: center of mass, over time
+- `velocity`: absolute velocity of centre of mass of blob, over time
+- `velocity_x`: radial velocity of centre of mass of blob, over time
+- `velocity_y`: poloidal velocity of centre of mass of blob, over time
+- `amplitude`: maximum of the signal within the blob above background, over time
+- `max_amplitude`: maximum of the signal within the blob above background
+- `mass`: integral of signal in area where background is exceeded, over time
 - `average_mass`: average blob mass
-- `size`: blob size over time
+- `size`: integral of area above background, over time
 
 other blob parameters are straightforward to implement
 
