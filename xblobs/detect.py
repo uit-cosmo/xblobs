@@ -75,7 +75,7 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_threshold = 'std', region 
 
     # apply condition for blobs
     if scale_threshold == 'std_poloidal':
-        scale = n_fluc.std(dim=(t_dim,rad_dim))
+        scale = n_fluc.std(dim=(pol_dim))
     elif scale_threshold == 'std':
         scale = n_fluc.std()
     elif scale_threshold == 'absolute_value':
