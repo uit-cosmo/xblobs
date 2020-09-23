@@ -24,7 +24,8 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_threshold = 'std', region 
             absolute_value: threshold is scalar value
             profile: threhsold is time- and poloidal-average profile
             std: threshold is standard diviation over all three dimensions
-            std_poloidal: threshold is standard deviation over time and radial dimension
+            std_poloidal: threshold is standard deviation over poloidal dimension
+            std_time: threshold is standard deviation over time dimension
 
     region : double, optional
         radial potition from where blobs are detected
@@ -76,6 +77,8 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_threshold = 'std', region 
     # apply condition for blobs
     if scale_threshold == 'std_poloidal':
         scale = n_fluc.std(dim=(pol_dim))
+    if scale_threshold == 'std_time':
+        scale = n_fluc.std(dim=(t_dim))
     elif scale_threshold == 'std':
         scale = n_fluc.std()
     elif scale_threshold == 'absolute_value':
