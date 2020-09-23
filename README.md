@@ -85,7 +85,8 @@ blob1 = Blob(ds,1, n_var = 'density', t_dim = 'time', rad_dim = 'radial', pol_di
   - `profile`: threshold is time- and poloidal-average profile
   - `std`: threshold is standard deviation over all three dimensions
   - `std_poloidal`: threshold is standard deviation over poloidal dimension
-  
+  - `std_time`: threshold is standard deviation over time dimension
+
 - `region`: blobs are detected in the region with radial indices greater than `region`
 
 - `background`: background that is subtracted. Options:
