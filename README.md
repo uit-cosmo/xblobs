@@ -47,7 +47,7 @@ print(blob1.lifetime())
 #etc
 ```
 ### xbout
-For xbout one has to specify the dimensions in addition.
+For [BOUT++ simulations](https://github.com/boutproject/BOUT-dev) using [xbout](https://github.com/boutproject/xBOUT) one has to specify the dimensions in addition.
 ```Python
 from xblobs import Blob
 from xblobs import find_blobs
@@ -125,7 +125,7 @@ the following blob parameters are implemented:
 other blob parameters are straightforward to implement
 
 ## Parallelization 
-Blob detection is parallelised across any number of dimensions by `dask-image`.
+Blob detection is parallelised across any number of dimensions by [`dask-image`](https://docs.dask.org/en/latest/).
 
 ## Contact
 If you have questions, suggestions or other comments you can contact me under gregor.decristoforo@uit.no
