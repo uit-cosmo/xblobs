@@ -21,7 +21,7 @@ or with using conda
 
 Dev install:
 ```
-git clone git@github.com:gregordecristoforo/xblobs.git
+git clone https://github.com/gregordecristoforo/xblobs.git
 pip install -e .
 ```
 
