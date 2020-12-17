@@ -14,14 +14,12 @@ The algorithm has been developed originally to detect and track coherent structu
 - dask-image >= 0.2.0
 - numpy >= 1.14
 
-## Installation (pip and conda installation not enabled yet)
-`pip install xblobs`
-or with using conda
-`conda install xblobs -c conda-forge`
+## Installation
 
 Dev install:
 ```
 git clone https://github.com/gregordecristoforo/xblobs.git
+cd xblobs
 pip install -e .
 ```
 
