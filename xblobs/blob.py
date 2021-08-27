@@ -5,13 +5,18 @@ class Blob():
     A single blob.
     """
 
-    def __init__(self, variable, id, n_var = 'n', t_dim = 'time', rad_dim = 'radial',pol_dim = 'binormal'):
+    def __init__(self, variable, id, n_var = 'n', t_dim = 'time', rad_dim = 'radial',
+            pol_dim = 'binormal', allow_length_one=True,
+        ):
         """
         variable : xbout Dataset containing blob_labels
 
         id : integer between 0 and number of detected blobs 
             0: refers to the background
             1-n: detected blobs  
+        allow_length_one : Bool, default True
+            If changed to False, raise an exception if the 'Blob' only exists at one
+            time-point.
 
         Choose other parameters equivalent to find_blobs() function.
         """
@@ -23,6 +28,9 @@ class Blob():
         self.pol_dim = pol_dim
 
         self.label_field = self.variable['blob_labels'].where(self.variable['blob_labels'] == self.id, drop=True)
+        if not allow_length_one and self.label_field.sizes[t_dim] == 1:
+            raise ValueError("Blob only exists at one time point")
+
         self.n_field = self.variable[self.n_var].where(self.variable['blob_labels'] == self.id, drop=True)
         com_radial_field = self.n_field[self.rad_dim]*self.n_field
         com_binormal_field = self.n_field[self.pol_dim]*self.n_field
