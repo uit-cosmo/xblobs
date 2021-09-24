@@ -26,7 +26,7 @@ pip install -e .
 ## Usage
 The algorithm is based on the threshold method, i.e. all structures exceeding a defined threshold are labeled as blobs. In order to track blobs over time they have to spatially overlap in two consecutive frames. 
 
-Applying `find_blobs` function on xarray dataset returns the dataset with a new variable called `blob_labels`. The number of blobs is added as an attribute to `blob_labels` as `number_of_blobs`. The parameters of single blobs can then be calculated with the `Blob` class. 
+Applying `find_blobs` function on an xarray dataset returns the dataset with a new variable called `blob_labels`. The number of blobs is added as an attribute to `blob_labels` as `number_of_blobs`. The parameters of single blobs can then be calculated with the `Blob` class. 
 ### xstorm
 The default implementation is done for a xstorm dataset.
 ```Python
