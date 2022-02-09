@@ -15,13 +15,7 @@ The algorithm has been developed originally to detect and track coherent structu
 - numpy >= 1.14
 
 ## Installation
-
-Dev install:
-```
-git clone https://github.com/gregordecristoforo/xblobs.git
-cd xblobs
-pip install -e .
-```
+pip install xblobs
 
 ## Usage
 The algorithm is based on the threshold method, i.e. all structures exceeding a defined threshold are labeled as blobs. In order to track blobs over time they have to spatially overlap in two consecutive frames. 

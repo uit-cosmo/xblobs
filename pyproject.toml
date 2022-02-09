@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "xblobs"
+version = "1.0.2"
+description = "Python tool to detect and analyse coherent structures in turbulence, powered by xarray."
+homepage = "https://github.com/uit-cosmo/xblobs"
+authors = ["gregordecristoforo <gregor.decristoforo@gmail.com>"]
+license = "MIT License"
+readme = 'README.md'
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+xarray = ">=0.11.2"
+scipy = ">=1.2.0"
+dask-image = ">=0.2.0"
+numpy = ">=1.22.2"
+
+[tool.poetry.dev-dependencies]
+pytest = ">=7.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
