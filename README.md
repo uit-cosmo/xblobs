@@ -1,7 +1,7 @@
 # xblobs
 Python tool to detect and analyse coherent structures in turbulence, powered by xarray. 
 
-The algorithm has been developed originally to detect and track coherent structures (blobs) in plasma turbulence simulations but it can be applied on any 2D xarray Dataset with a cartesian grid and constant spacing `dx`,`dy` and `dt`. An example is shown below:
+The algorithm has been developed originally to detect and track coherent structures (blobs) in plasma turbulence simulations, but it can be applied on any 2D xarray Dataset with a Cartesian grid and constant spacing `dx`,`dy` and `dt`. An example is shown below:
 
 
 ![Density evolution](example_gifs/turbulence_blobs.gif ) 
