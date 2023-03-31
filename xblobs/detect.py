@@ -117,6 +117,8 @@ def _detect_features(da, parallel=False):
 
     Parameters
     ----------
+    da : xbout Dataset
+
     parallel : bool, optional
         Only really for debugging by checking dask_image.ndmeasure.label
         against scipy.ndimage.label.
