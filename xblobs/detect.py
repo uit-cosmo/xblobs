@@ -6,15 +6,11 @@ from xarray import apply_ufunc
 from .blob import Blob
 
 
-DEFAULT_THRESHOLD = 1
-DEFAULT_REGION = 0
-
-
 def find_blobs(
     da,
-    threshold=DEFAULT_THRESHOLD,
+    threshold=1,
     scale_threshold="std",
-    region=DEFAULT_REGION,
+    region=0,
     background="profile",
     n_var="n",
     t_dim="time",
@@ -26,7 +22,7 @@ def find_blobs(
     ----------
     da : xbout Dataset
 
-    threshold : double, optional
+    threshold : float, optional
         threshold value expressed in terms of the chosen scale_threshold
 
     scale_threshold : string, optional
@@ -37,7 +33,7 @@ def find_blobs(
             std_poloidal: threshold is standard deviation over poloidal dimension
             std_time: threshold is standard deviation over time dimension
 
-    region : double, optional
+    region : float, optional
         radial potition from where blobs are detected
 
     background : string, optional
@@ -64,14 +60,14 @@ def find_blobs(
 
     """
     # remove core region if wanted
-    mask = da[rad_dim] > region * da[rad_dim][-1]
+    blob_regions = da[rad_dim] > region * da[rad_dim][-1]
 
     mask1 = da[pol_dim] > 0.0 * da[pol_dim][-1]
-    mask2 = da[pol_dim] < 1.0 * da[pol_dim][-1]
+    background_regions = da[pol_dim] < 1.0 * da[pol_dim][-1]
 
-    n_selected_region = da[n_var].where(mask, 0)
+    n_selected_region = da[n_var].where(blob_regions, 0)
     n_selected_region = n_selected_region.where(mask1, 0)
-    n_selected_region = n_selected_region.where(mask2, 0)
+    n_selected_region = n_selected_region.where(background_regions, 0)
 
     da["n_selected_region"] = n_selected_region
 
@@ -87,7 +83,7 @@ def find_blobs(
     # apply condition for blobs
     if scale_threshold == "std_poloidal":
         scale = n_fluc.std(dim=(pol_dim))
-    if scale_threshold == "std_time":
+    elif scale_threshold == "std_time":
         scale = n_fluc.std(dim=(t_dim))
     elif scale_threshold == "std":
         scale = n_fluc.std()
@@ -98,10 +94,10 @@ def find_blobs(
     else:
         raise SystemExit("Error: chosen scale_threshold not implemented")
 
-    mask = n_fluc > threshold * scale
-    mask2 = n_fluc <= threshold * scale
-    fluctuations = n_fluc.where(mask, 0)
-    fluctuations = fluctuations.where(mask2, 1)
+    blob_regions = n_fluc > threshold * scale
+    background_regions = n_fluc <= threshold * scale
+    fluctuations = n_fluc.where(blob_regions, 0)
+    fluctuations = fluctuations.where(background_regions, 1)
     da["fluctuations"] = fluctuations
 
     # detect coherent blob structures
