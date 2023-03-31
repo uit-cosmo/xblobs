@@ -9,8 +9,18 @@ from .blob import Blob
 DEFAULT_THRESHOLD = 1
 DEFAULT_REGION = 0
 
-def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_threshold = 'std', region = DEFAULT_REGION, \
-                background = 'profile', n_var = 'n', t_dim = 'time', rad_dim = 'radial',pol_dim = 'binormal'):
+
+def find_blobs(
+    da,
+    threshold=DEFAULT_THRESHOLD,
+    scale_threshold="std",
+    region=DEFAULT_REGION,
+    background="profile",
+    n_var="n",
+    t_dim="time",
+    rad_dim="radial",
+    pol_dim="binormal",
+):
     """
     Parameters
     ----------
@@ -52,55 +62,55 @@ def find_blobs(da, threshold=DEFAULT_THRESHOLD, scale_threshold = 'std', region 
     -------
     blob_labels : xarray.DataArray containing labels of features.
 
-    """    
+    """
     # remove core region if wanted
-    mask = da[rad_dim] > region*da[rad_dim][-1]
+    mask = da[rad_dim] > region * da[rad_dim][-1]
 
-    mask1 = da[pol_dim] > 0.0*da[pol_dim][-1]
-    mask2 = da[pol_dim] < 1.0*da[pol_dim][-1]
+    mask1 = da[pol_dim] > 0.0 * da[pol_dim][-1]
+    mask2 = da[pol_dim] < 1.0 * da[pol_dim][-1]
 
-    n_selected_region  = da[n_var].where(mask, 0)
-    n_selected_region  = n_selected_region.where(mask1, 0)
-    n_selected_region  = n_selected_region.where(mask2, 0)
+    n_selected_region = da[n_var].where(mask, 0)
+    n_selected_region = n_selected_region.where(mask1, 0)
+    n_selected_region = n_selected_region.where(mask2, 0)
 
-    da['n_selected_region'] = n_selected_region
+    da["n_selected_region"] = n_selected_region
 
     # subtract profile of n
-    if background == 'profile':
-        da['n_profile'] = da['n_selected_region'].mean(dim=(t_dim, pol_dim))
-        n_fluc =  da['n_selected_region'] - da['n_profile']
-    elif background == 'flat':
-        n_fluc =  da['n_selected_region']
+    if background == "profile":
+        da["n_profile"] = da["n_selected_region"].mean(dim=(t_dim, pol_dim))
+        n_fluc = da["n_selected_region"] - da["n_profile"]
+    elif background == "flat":
+        n_fluc = da["n_selected_region"]
     else:
-        raise SystemExit('Error: background must be either profile or flat')
+        raise SystemExit("Error: background must be either profile or flat")
 
     # apply condition for blobs
-    if scale_threshold == 'std_poloidal':
+    if scale_threshold == "std_poloidal":
         scale = n_fluc.std(dim=(pol_dim))
-    if scale_threshold == 'std_time':
+    if scale_threshold == "std_time":
         scale = n_fluc.std(dim=(t_dim))
-    elif scale_threshold == 'std':
+    elif scale_threshold == "std":
         scale = n_fluc.std()
-    elif scale_threshold == 'absolute_value':
+    elif scale_threshold == "absolute_value":
         scale = 1
-    elif scale_threshold == 'profile':
-        scale = da['n_selected_region'].mean(dim=(t_dim, pol_dim))
+    elif scale_threshold == "profile":
+        scale = da["n_selected_region"].mean(dim=(t_dim, pol_dim))
     else:
-        raise SystemExit('Error: chosen scale_threshold not implemented')
+        raise SystemExit("Error: chosen scale_threshold not implemented")
 
-    mask = n_fluc>threshold*scale
-    mask2 = n_fluc<=threshold*scale
+    mask = n_fluc > threshold * scale
+    mask2 = n_fluc <= threshold * scale
     fluctuations = n_fluc.where(mask, 0)
-    fluctuations  = fluctuations.where(mask2, 1)
-    da['fluctuations'] = fluctuations
+    fluctuations = fluctuations.where(mask2, 1)
+    da["fluctuations"] = fluctuations
 
-    #detect coherent blob structures
-    blob_labels = _detect_features(da['fluctuations'], parallel=False)
+    # detect coherent blob structures
+    blob_labels = _detect_features(da["fluctuations"], parallel=False)
 
-    da['blob_labels'] = blob_labels
-    da["blob_labels"].attrs["number_of_blobs"] = np.max(da['blob_labels'].values)
+    da["blob_labels"] = blob_labels
+    da["blob_labels"].attrs["number_of_blobs"] = np.max(da["blob_labels"].values)
     return da
-    
+
 
 def _detect_features(da, parallel=False):
     """
@@ -117,10 +127,10 @@ def _detect_features(da, parallel=False):
     """
     if parallel:
         detector_gufunc = _dask_image_detector_gufunc
-        dask = 'allowed'
+        dask = "allowed"
     else:
         detector_gufunc = _scipy_detector_gufunc
-        dask = 'allowed'
+        dask = "allowed"
 
     labels = apply_ufunc(detector_gufunc, da, dask=dask, keep_attrs=True)
 
