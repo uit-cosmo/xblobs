@@ -119,6 +119,3 @@ other blob parameters are straightforward to implement
 
 ## Parallelization 
 Blob detection is parallelised across any number of dimensions by [`dask-image`](https://docs.dask.org/en/latest/).
-
-## Contact
-If you have questions, suggestions or other comments you can contact me under gregor.decristoforo@uit.no
