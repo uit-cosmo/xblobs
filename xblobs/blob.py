@@ -22,11 +22,18 @@ class Blob:
         id : integer between 0 and number of detected blobs 
             0: refers to the background
             1-n: detected blobs  
-        allow_length_one : Bool, default True
-            If changed to False, raise an exception if the 'Blob' only exists at one
-            time-point.
 
-        Choose other parameters equivalent to find_blobs() function.
+        n_var : xarray variable, optional
+            xarray variable used for blob tracking
+        
+        t_dim : xarray dimension, optional
+            xarray dimension for time
+
+        rad_dim : xarray dimension, optional
+            xarray dimension for radial dimension
+
+        pol_dim : xarray dimenison, optional
+            xarray dimension for poloidal dimension 
         """
         self.variable = variable
         self.id = id
@@ -100,45 +107,45 @@ class Blob:
         if self.com_radial.size == 1:
             # print('blob only detected in one frame')
             return 0
-        else:
-            try:
-                return (
-                    (
-                        np.diff(np.concatenate(self.com_radial))
-                        / (
-                            self.label_field[self.t_dim].values[1]
-                            - self.label_field[self.t_dim].values[0]
-                        )
+
+        try:
+            return (
+                (
+                    np.diff(np.concatenate(self.com_radial))
+                    / (
+                        self.label_field[self.t_dim].values[1]
+                        - self.label_field[self.t_dim].values[0]
                     )
-                    ** 2
-                    + (
-                        np.diff(np.concatenate(self.com_binormal))
-                        / (
-                            self.label_field[self.t_dim].values[1]
-                            - self.label_field[self.t_dim].values[0]
-                        )
+                )
+                ** 2
+                + (
+                    np.diff(np.concatenate(self.com_binormal))
+                    / (
+                        self.label_field[self.t_dim].values[1]
+                        - self.label_field[self.t_dim].values[0]
                     )
-                    ** 2
-                ) ** 0.5
-            except:
-                return (
-                    (
-                        np.diff(self.com_radial)
-                        / (
-                            self.label_field[self.t_dim].values[1]
-                            - self.label_field[self.t_dim].values[0]
-                        )
+                )
+                ** 2
+            ) ** 0.5
+        except:
+            return (
+                (
+                    np.diff(self.com_radial)
+                    / (
+                        self.label_field[self.t_dim].values[1]
+                        - self.label_field[self.t_dim].values[0]
                     )
-                    ** 2
-                    + (
-                        np.diff(self.com_binormal)
-                        / (
-                            self.label_field[self.t_dim].values[1]
-                            - self.label_field[self.t_dim].values[0]
-                        )
+                )
+                ** 2
+                + (
+                    np.diff(self.com_binormal)
+                    / (
+                        self.label_field[self.t_dim].values[1]
+                        - self.label_field[self.t_dim].values[0]
                     )
-                    ** 2
-                ) ** 0.5
+                )
+                ** 2
+            ) ** 0.5
 
     def velocity_x(self):
         """
@@ -150,17 +157,17 @@ class Blob:
         if self.com_radial.size == 1:
             # print('blob only detected in one frame')
             return 0
-        else:
-            try:
-                return np.diff(np.concatenate(self.com_radial)) / (
-                    self.label_field[self.t_dim].values[1]
-                    - self.label_field[self.t_dim].values[0]
-                )
-            except:
-                return np.diff((self.com_radial)) / (
-                    self.label_field[self.t_dim].values[1]
-                    - self.label_field[self.t_dim].values[0]
-                )
+
+        try:
+            return np.diff(np.concatenate(self.com_radial)) / (
+                self.label_field[self.t_dim].values[1]
+                - self.label_field[self.t_dim].values[0]
+            )
+        except:
+            return np.diff((self.com_radial)) / (
+                self.label_field[self.t_dim].values[1]
+                - self.label_field[self.t_dim].values[0]
+            )
 
     def velocity_y(self):
         """
@@ -172,17 +179,16 @@ class Blob:
         if self.com_binormal.size == 1:
             # print('blob only detected in one frame')
             return 0
-        else:
-            try:
-                return np.diff(np.concatenate(self.com_binormal)) / (
-                    self.label_field[self.t_dim].values[1]
-                    - self.label_field[self.t_dim].values[0]
-                )
-            except:
-                return np.diff(self.com_binormal) / (
-                    self.label_field[self.t_dim].values[1]
-                    - self.label_field[self.t_dim].values[0]
-                )
+        try:
+            return np.diff(np.concatenate(self.com_binormal)) / (
+                self.label_field[self.t_dim].values[1]
+                - self.label_field[self.t_dim].values[0]
+            )
+        except:
+            return np.diff(self.com_binormal) / (
+                self.label_field[self.t_dim].values[1]
+                - self.label_field[self.t_dim].values[0]
+            )
 
     def amplitude(self):
         """
